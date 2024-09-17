@@ -1,4 +1,4 @@
-package org.example.audio
+package org.example.controller
 
 import com.github.natanbc.lavadsp.timescale.TimescalePcmAudioFilter
 import com.sedmelluq.discord.lavaplayer.filter.UniversalPcmAudioFilter
@@ -30,7 +30,7 @@ class Controller(val player: AudioPlayer, val manager: AudioManager, val channel
         try {
             setSpeed(1.0)
             val searchResult: AudioItem? = Web()
-                .loadSearch(ControllerManager.youtube, ControllerManager.youtube.httpInterfaceManager.`interface`, url)
+                .loadSearch(ControllerManager.youtubeAudioSourceManager, ControllerManager.youtubeAudioSourceManager.httpInterfaceManager.`interface`, url)
 
 
             searchResult as AudioPlaylist

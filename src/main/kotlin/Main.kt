@@ -15,7 +15,9 @@ fun main() {
     val token = Files.readString(Path.of(ClassLoader.getSystemResource("config").toURI()))
 
 
-    println("봇을 실행합니다. \nToken: ${token}")
+    println("봇을 실행합니다.\nToken: $token")
+
+
     val bot = Bot(
         token, // Bot token
         571651913767059456 // Me
@@ -26,8 +28,9 @@ fun main() {
         Info(),
         Now()
     )
-    val jda = bot.run()
-    bot.updateCommands()
 
-    jda.presence.setPresence(OnlineStatus.DO_NOT_DISTURB, Activity.customStatus("코드 리라이트 중..."))
+    bot.run()
+
+    bot.updateCommands()
+    bot.setPresence(OnlineStatus.DO_NOT_DISTURB, Activity.customStatus("코드 리라이트 중..."))
 }

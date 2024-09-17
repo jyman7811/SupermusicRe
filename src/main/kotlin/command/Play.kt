@@ -1,11 +1,9 @@
 package org.example.command
 
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.OptionType
-import org.example.handler.Command
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
-import org.example.audio.ControllerManager
+import org.example.controller.ControllerManager
 import org.example.Util
 
 class Play : Command() {
@@ -16,29 +14,16 @@ class Play : Command() {
     override val description: String = "노래를 재생합니다."
 
 
-    override fun run(event: SlashCommandInteractionEvent) {
-        val searchOption = event.getOption("검색어")
+    override fun run(event: CommandEvent) {
+        Checker
+            .checkIsInGuild(event)
+            .checkIsInVoice(event)
+            .checkIsOptionFilled(event, "검색어", "검색어를 입력해야 노래를 찾을 수 있어요!")
 
-        if (searchOption == null) {
-            event.reply("검색어를 입력해주세요!").queue()
-        }
 
-        when {
-            event.member!!.voiceState == null || !event.member!!.voiceState!!.inAudioChannel() -> return event.replyEmbeds(
-                EmbedBuilder()
-                .setTitle("아무 음성채널이나 들어가주세요!")
-                .setDescription("노래는 음성채널에서 재생이 가능합니다!")
-                .setColor(Util.getRandomColor())
-                .build()).queue()
-            searchOption!!.name.isEmpty() -> return event.replyEmbeds(
-                EmbedBuilder()
-                .setTitle("검색어를 입력하세요!")
-                .setDescription("Youtube 에서 검색하려면 검색 키워드가 있어야 합니다!")
-                .setColor(Util.getRandomColor())
-                .build()).queue()
-        }
-        val controller = ControllerManager.getController(event.guild!!, event.guild!!.audioManager, event.channel)
-        controller.join(event.member!!.voiceState!!.channel!!.asVoiceChannel())
-        controller.play(searchOption!!.asString, event.user)
+        val option = event.getOption("검색어")!!
+        val controller = event.controller
+        controller!!.join(event.member!!.voiceState!!.channel!!.asVoiceChannel())
+        controller.play(option.asString, event.user)
     }
 }

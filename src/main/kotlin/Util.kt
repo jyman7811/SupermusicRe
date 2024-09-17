@@ -6,11 +6,20 @@ import java.util.concurrent.TimeUnit
 
 object Util {
 
+    /**
+     * This returns random color in java.awt.Color.
+     * @return Returns random color.
+     */
     fun getRandomColor(): Color {
         val random = Random()
         return Color(random.nextInt(255), random.nextInt(255), random.nextInt(255))
     }
 
+    /**
+     * Converts milliseconds to a formatted string.
+     * @param ms Time in milliseconds. ex) uptime
+     * @return Returns a formatted string.
+     */
     fun convertTime(ms: Long): String {
         val hours = TimeUnit.MILLISECONDS.toHours(ms).toInt() % 24
         val minutes = (TimeUnit.MILLISECONDS.toMinutes(ms) % 60).toInt()
@@ -27,5 +36,4 @@ object Util {
         }
         return str
     }
-
 }

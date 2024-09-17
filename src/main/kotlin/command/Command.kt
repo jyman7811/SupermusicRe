@@ -1,6 +1,5 @@
-package org.example.handler
+package org.example.command
 
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 
 
@@ -31,5 +30,5 @@ abstract class Command {
 
 
 
-    abstract fun run(event: SlashCommandInteractionEvent)
+    abstract fun run(event: CommandEvent)
 }

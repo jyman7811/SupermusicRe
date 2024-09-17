@@ -1,4 +1,4 @@
-package org.example.audio
+package org.example.controller
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
@@ -9,19 +9,19 @@ import dev.lavalink.youtube.clients.Web
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.managers.AudioManager
+import org.example.audio.AudioPlayerSendHandler
 
 
 object ControllerManager {
     private val controllers = HashMap<Long, Controller>()
-    val musicManager: GuildMusicManager = GuildMusicManager()
-    val playerManager: AudioPlayerManager = DefaultAudioPlayerManager()
-    val youtube = YoutubeAudioSourceManager( /*allowSearch:*/true, Music(), Web(), AndroidTestsuite())
+    private val playerManager: AudioPlayerManager = DefaultAudioPlayerManager()
+    val youtubeAudioSourceManager = YoutubeAudioSourceManager( /*allowSearch:*/true, Music(), Web(), AndroidTestsuite())
 
     init {
-        playerManager.registerSourceManager(youtube)
+        playerManager.registerSourceManager(youtubeAudioSourceManager)
     }
 
-    fun makeController(manager: AudioManager, guildId: Long, channel: MessageChannel): Controller {
+    private fun makeController(manager: AudioManager, guildId: Long, channel: MessageChannel): Controller {
 
         val player = playerManager.createPlayer()
         player.volume = 35
@@ -41,23 +41,14 @@ object ControllerManager {
         }
     }
 
-    fun destroy(controller: Controller, msg: String) {
-        try {
-
-            destroy(controllers.filterValues {it == controller}.keys.first(), msg)
-        } catch (e: RuntimeException) {
-            return
-        }
-    }
-
     /**
      *
      * @param guild 해당하는 Guild 값입니다.
      *
      */
-    fun getController(guild: Guild, manager: AudioManager, channel: MessageChannel) : Controller {
-        if (this.controllers.containsKey(guild.id.toLong())) return controllers[guild.id.toLong()]!!
-        return musicManager.makeController(manager, guild.idLong, channel)
+    fun getController(guild: Guild, channel: MessageChannel) : Controller {
+        if (controllers.containsKey(guild.id.toLong())) return controllers[guild.id.toLong()]!!
+        return this.makeController(guild.audioManager, guild.idLong, channel)
     }
 
     fun controllerCount(): Int {
