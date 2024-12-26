@@ -10,7 +10,7 @@ import org.example.controller.ControllerManager
 class CommandEvent(api: JDA, responseNumber: Long, interaction: SlashCommandInteraction) : SlashCommandInteractionEvent(api, responseNumber, interaction) {
      val controller: Controller?
         get() {
-            return this.guild?.let { ControllerManager.getController(it, this.channel) }
+            return this.guild?.let { ControllerManager.getController(it, interaction.messageChannel) }
         }
 
     /**

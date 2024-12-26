@@ -1,9 +1,11 @@
 package org.example.command
 
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
-import org.example.controller.ControllerManager
+import net.dv8tion.jda.api.interactions.components.selections.SelectOption
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import org.example.Util
 
 class Play : Command() {
@@ -24,6 +26,35 @@ class Play : Command() {
         val option = event.getOption("검색어")!!
         val controller = event.controller
         controller!!.join(event.member!!.voiceState!!.channel!!.asVoiceChannel())
-        controller.play(option.asString, event.user)
+
+
+        val arg = option.asString
+
+        if (Util.URLMatch(arg)) {
+            val track = controller.playURL(arg, event.user)
+            return event.reply("${track.info.title}을 대기열에 추가했어요!").queue()
+        }
+
+        val results = controller.search(arg)
+        if (results.isEmpty()) {
+            return event.reply("검색 결과가 없어요!").queue()
+        }
+
+
+        val selectMenu = StringSelectMenu.create("play/${event.guild!!.id}/${event.user.id}")
+        var i = 1
+        results.forEach({track ->
+            if (i > 5) return@forEach
+            selectMenu.addOptions(SelectOption.of(track.info.title, track.info.uri)
+                //.withEmoji(Util.numberToEmoji(i))
+                .withDescription("${Util.convertTime(track.duration)}/${track.info.author}")
+            )
+            i+=1
+        })
+
+
+        event.reply("`${arg}`에 대한 **검색결과**")
+            .addActionRow(selectMenu.build())
+            .queue()
     }
 }

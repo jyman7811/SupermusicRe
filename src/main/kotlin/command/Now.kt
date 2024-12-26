@@ -27,7 +27,7 @@ class Now : Command() {
             .setDescription("${Util.convertTime(playingTrack.duration)} **|** ${if (Util.convertTime(playingTrack.position) == "" ) "방금" else Util.convertTime(playingTrack.position)} 재생됨")
             .setThumbnail("http://i.ytimg.com/vi/${playingTrack.identifier}/0.jpg")
             .addField("요청자", (playingTrack.userData as User).asTag, false)
-            .addField("반복 ", if (controller.isLoop) "활성화" else "비활성화", false)
+            .addField("반복 ", if (controller.repeat.status >0) "활성화" else "비활성화", false)
             .setColor(Util.getRandomColor())
             .build()
         event.replyEmbeds(embed).queue()

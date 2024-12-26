@@ -9,13 +9,14 @@ class LeaveGuildHandler : ListenerAdapter() {
         val channel = event.channelLeft ?: return
 
 
-        if (channel.members.size == 0) return ControllerManager.destroy(event.guild.idLong, "모든 사용자가 나가서 연결을 해제 하였습니다!")
-
+        val members = channel.members
+        val userMembers = members.filter {!it.user.isBot}
         /**
          * 채널에 봇 혼자 남았을 때 컨트롤러를 삭제합니다.
          */
-        if (channel.members.size == 1 && channel.members[0].user == event.jda.selfUser) {
-            ControllerManager.destroy(event.guild.idLong, "모든 사용자가 나가서 연결을 해제 하겠습니다!")
+
+        if (userMembers.isEmpty()) {
+            ControllerManager.destroy(event.guild.idLong, "아무도 없는 모양이네.")
         }
     }
 }

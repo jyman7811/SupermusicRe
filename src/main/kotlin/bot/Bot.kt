@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Activity
+import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 import org.example.command.Command
@@ -14,6 +15,10 @@ class Bot(private val token: String, private val owner: Long) {
     private val slashCommandData: ArrayList<SlashCommandData> = ArrayList()
     private var commands: ArrayList<Command> = ArrayList()
     private var jda: JDA? = null
+
+    fun getJDA() : JDA? {
+        return jda
+    }
 
     /**
      * 커맨드를 추가합니다.
@@ -35,11 +40,19 @@ class Bot(private val token: String, private val owner: Long) {
     }
 
     fun updateCommands() {
-        val action = jda!!.updateCommands()
-        action.addCommands(this.slashCommandData).queue {
-            println("명령어 업데이트됨.")
+        this.slashCommandData.forEach {
+            jda!!.upsertCommand(it)
         }
+        println("전역 명령어 업데이트 됨")
     }
+
+    fun updateGuildCommands(guild: Guild) {
+        this.slashCommandData.forEach {
+            guild.upsertCommand(it)
+        }
+        println("${guild.name}의 명령어 업데이트 됨")
+    }
+
 
     /**
      * 봇의 작동을 시작합니다.
@@ -47,7 +60,7 @@ class Bot(private val token: String, private val owner: Long) {
      */
     fun run(): JDA? {
         this.jda = JDABuilder.createDefault(this.token)
-            .addEventListeners(CommandHandler(owner, commands), LeaveGuildHandler())
+            .addEventListeners(CommandHandler(owner, commands, slashCommandData), LeaveGuildHandler())
             .build()
         return this.jda
     }
