@@ -5,10 +5,9 @@ import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Activity
 import org.example.bot.Bot
 import org.example.command.*
-import kotlinx.coroutines.*
 import java.nio.file.Files
 import java.nio.file.Path
-import kotlin.concurrent.timer
+
 
 
 fun main() {

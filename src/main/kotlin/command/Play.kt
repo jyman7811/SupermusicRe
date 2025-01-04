@@ -1,7 +1,8 @@
 package org.example.command
 
-import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.entities.emoji.Emoji
+import com.sedmelluq.discord.lavaplayer.track.AudioItem
+import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
@@ -20,7 +21,7 @@ class Play : Command() {
         Checker
             .checkIsInGuild(event)
             .checkIsInVoice(event)
-            .checkIsOptionFilled(event, "검색어", "검색어를 입력해야 노래를 찾을 수 있어요!")
+            .checkIsOptionFilled(event, "검색어", "검색어가 있어야 노래를 찾지. 쓸모 없는 하인이네.")
 
 
         val option = event.getOption("검색어")!!
@@ -31,29 +32,38 @@ class Play : Command() {
         val arg = option.asString
 
         if (Util.URLMatch(arg)) {
-            val track = controller.playURL(arg, event.user)
-            return event.reply("${track.info.title}을 대기열에 추가했어요!").queue()
+            val track: AudioItem? = controller.playURL(arg, event.user)
+            track?: return event.reply("검색 결과가 없네.").queue()
+
+            try { // 플리일때
+                val playlist = track as AudioPlaylist
+                return event.reply("${playlist.name}의 곡 ${playlist.tracks.size}개를 대기열에 추가했어.").queue()
+            } catch (_: Exception) {
+                track as AudioTrack
+                return event.reply("${track.info.title}을 대기열에 추가했어.").queue()
+            }
         }
 
         val results = controller.search(arg)
         if (results.isEmpty()) {
-            return event.reply("검색 결과가 없어요!").queue()
+            return event.reply("검색 결과가 없네.").queue()
         }
 
 
         val selectMenu = StringSelectMenu.create("play/${event.guild!!.id}/${event.user.id}")
         var i = 1
-        results.forEach({track ->
+        results.forEach { track ->
             if (i > 5) return@forEach
-            selectMenu.addOptions(SelectOption.of(track.info.title, track.info.uri)
-                //.withEmoji(Util.numberToEmoji(i))
-                .withDescription("${Util.convertTime(track.duration)}/${track.info.author}")
+            selectMenu.addOptions(
+                SelectOption.of(track.info.title, track.info.uri)
+                    //.withEmoji(Util.numberToEmoji(i))
+                    .withDescription("${Util.convertTime(track.duration)}/${track.info.author}")
             )
-            i+=1
-        })
+            i += 1
+        }
 
 
-        event.reply("`${arg}`에 대한 **검색결과**")
+        event.reply("`${arg}`에 대한 **검색결과**야.")
             .addActionRow(selectMenu.build())
             .queue()
     }

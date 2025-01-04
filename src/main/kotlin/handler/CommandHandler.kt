@@ -1,5 +1,6 @@
 package org.example.handler
 
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
@@ -45,9 +46,10 @@ class CommandHandler(private val owner: Long, private val commands: ArrayList<Co
             if (id[2] != event.user.id) return
             val controller = ControllerManager.getController(event.jda.getGuildById(id[1])!!, event.messageChannel)
             val track = controller.playURL(event.values[0], event.user)
+            track as AudioTrack
             event.editComponents().queue()
             event.message.delete().queue()
-            event.channel.sendMessage("${track.info.title}을 대기열에 추가했어요!").queue()
+            event.channel.sendMessage("${track.info.title}을 대기열에 추가했어.").queue()
         }
     }
 }

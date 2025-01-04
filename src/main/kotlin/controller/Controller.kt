@@ -1,22 +1,17 @@
 package org.example.controller
 
-import com.github.natanbc.lavadsp.timescale.TimescalePcmAudioFilter
-import com.sedmelluq.discord.lavaplayer.filter.UniversalPcmAudioFilter
-import com.sedmelluq.discord.lavaplayer.format.AudioDataFormat
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer
+import com.sedmelluq.discord.lavaplayer.player.FunctionalResultHandler
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter
-
 import com.sedmelluq.discord.lavaplayer.track.AudioItem
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason
 import dev.lavalink.youtube.clients.Web
-import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 import net.dv8tion.jda.api.managers.AudioManager
-import org.example.Util
 import java.util.*
 
 
@@ -24,7 +19,7 @@ class Controller(private val player: AudioPlayer, private val manager: AudioMana
     // 대기열
     private val queue: Queue<AudioTrack> = LinkedList()
     var repeat: Repeat = Repeat.NONE
-    var speed: Double = 1.0
+//    var speed: Double = 1.0
 
 
     fun setPaused(boolean: Boolean) {
@@ -47,9 +42,9 @@ class Controller(private val player: AudioPlayer, private val manager: AudioMana
         manager.openAudioConnection(channel)
     }
 
-    fun disconnect() {
-        player.destroy()
-    }
+//    fun disconnect() {
+//        player.destroy()
+//    }
 
     fun search(text: String) : List<AudioTrack> {
         val searchResult = Web().loadSearch(ControllerManager.youtubeAudioSourceManager, ControllerManager.youtubeAudioSourceManager.httpInterfaceManager.`interface`, text)
@@ -63,17 +58,46 @@ class Controller(private val player: AudioPlayer, private val manager: AudioMana
         if (track != null) player.playTrack(track) else player.stopTrack()
     }
 
-    fun play(track: AudioTrack, author: User) {
+    private fun play(track: AudioTrack, author: User) {
         track.userData = author
 
         queue.add(track)
         if (player.playingTrack == null) player.playTrack(queue.poll())
     }
 
-    fun playURL(uri: String, author: User) : AudioTrack {
-        val track = search(uri)[0]
-        play(track, author)
-        return track
+    fun playURL(uri: String, author: User) : AudioItem? {
+        var loadedItem: AudioItem? = null
+
+        ControllerManager.playerManager.loadItemOrdered(player, uri, FunctionalResultHandler(
+            { track: AudioTrack -> // track Consumer
+                loadedItem = track
+                play(track, author)
+            },
+            { playlist: AudioPlaylist -> // playlist Consumer
+                loadedItem = playlist
+
+                var firstTrack = playlist.selectedTrack
+
+                if (firstTrack == null) {
+                    firstTrack = playlist.tracks[0]
+                }
+
+
+                play(firstTrack, author)
+                val tracks = playlist.tracks
+                tracks.remove(firstTrack)
+                tracks.forEach {
+                    play(it, author)
+                }
+            },   // empty result Consumer
+            {
+                println("읎어요")
+            },
+            {    // exception Consumer
+                println("망했어요")
+            }
+        )).get()
+        return loadedItem
     }
 
     fun fuck(msg: String) {

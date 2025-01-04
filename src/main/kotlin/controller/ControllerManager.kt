@@ -12,13 +12,12 @@ import org.example.audio.AudioPlayerSendHandler
 
 object ControllerManager {
     private val controllers = HashMap<Long, Controller>()
-    private val playerManager: AudioPlayerManager = DefaultAudioPlayerManager()
+    val playerManager: AudioPlayerManager = DefaultAudioPlayerManager()
     val youtubeAudioSourceManager = YoutubeAudioSourceManager( /*allowSearch:*/true, MusicWithThumbnail(), WebWithThumbnail(), MWeb(), TvHtml5Embedded(), AndroidMusic(), Tv(), AndroidVr())
 
 
 
     init {
-
         playerManager.registerSourceManager(youtubeAudioSourceManager)
         Web.setPoTokenAndVisitorData("MnTViYTqpJrpatWxzjQ6xvG2eEZOumCBEWkm5bqPlL6WzkV5Vn302DIjtp9cY1tCD86xofZr3yC59mfKZBkABEl9TDMfGKBUfVRgvlGt8alQw0ldlfDiRvv86qdy3YE3UdQVD9JSy5l8PJbSVzv-SMUFsuLLrA==", "CgtMVnRkcjhhMnZRdyjJ-KO7BjIKCgJLUhIEGgAgGw%3D%3D")
     }

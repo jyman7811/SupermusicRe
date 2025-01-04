@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "2.0.10"
+    kotlin("plugin.serialization") version "2.1.0"
 }
 
 group = "org.example"
@@ -20,6 +21,7 @@ dependencies {
     implementation("dev.lavalink.youtube:v2:1.11.2")
     implementation("com.github.JustRed23:lavadsp:0.7.7-1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0-RC")
 }
 
 tasks.test {
