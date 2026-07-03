@@ -1,6 +1,7 @@
 package org.example.command
 
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
+import java.util.concurrent.TimeUnit
 
 class Skip : Command() {
     override val name: String = "skip"
@@ -15,7 +16,9 @@ class Skip : Command() {
             .checkIsPlaying(event)
 
         val controller = event.controller!!
-        event.reply("${controller.getPlayingTrack()!!.info.title}을 스킵했어요!").queue()
+        event.reply("${controller.getPlayingTrack()!!.info.title}을 스킵했어요!").queue {
+            it.deleteOriginal().queueAfter(5, TimeUnit.SECONDS)
+        }
         controller.skip()
     }
 }

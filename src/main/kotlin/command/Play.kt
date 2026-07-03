@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 
 import org.example.Util
+import java.util.concurrent.TimeUnit
 
 class Play : Command() {
 
@@ -35,20 +36,28 @@ class Play : Command() {
 
         if (Util.URLMatch(arg)) {
             val track: AudioItem? = controller.playURL(arg, event.user)
-            track?: return event.reply("검색 결과가 없네.").queue()
+            track?: return event.reply("검색 결과가 없네.").queue {
+                it.deleteOriginal().queueAfter(5, TimeUnit.SECONDS)
+            }
 
             try { // 플리일때
                 val playlist = track as AudioPlaylist
-                return event.reply("${playlist.name}의 곡 ${playlist.tracks.size}개를 대기열에 추가했어.").queue()
+                return event.reply("${playlist.name}의 곡 ${playlist.tracks.size}개를 대기열에 추가했어.").queue { hook ->
+                    hook.deleteOriginal().queueAfter(1, java.util.concurrent.TimeUnit.MINUTES)
+                }
             } catch (_: Exception) {
                 track as AudioTrack
-                return event.reply("${track.info.title}을 대기열에 추가했어.").queue()
+                return event.reply("${track.info.title}을 대기열에 추가했어.").queue { hook ->
+                    hook.deleteOriginal().queueAfter(1, java.util.concurrent.TimeUnit.MINUTES)
+                }
             }
         }
 
         val results = controller.search(arg)
         if (results.isEmpty()) {
-            return event.reply("검색 결과가 없네.").queue()
+            return event.reply("검색 결과가 없네.").queue {
+                it.deleteOriginal().queueAfter(5, TimeUnit.SECONDS)
+            }
         }
 
 
@@ -67,6 +76,8 @@ class Play : Command() {
 
         event.reply(String.format("`%s`에 대한 **검색결과**야.", arg))
             .setComponents(ActionRow.of(selectMenu.build()))
-            .queue();
+            .queue {
+                it.deleteOriginal().queueAfter(1, TimeUnit.MINUTES)
+            };
     }
 }

@@ -4,8 +4,10 @@ import org.gradle.kotlin.dsl.maven
 import org.gradle.kotlin.dsl.repositories
 
 plugins {
+    java
     kotlin("jvm") version "2.0.10"
     kotlin("plugin.serialization") version "2.1.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = "org.example"
@@ -30,11 +32,20 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0-RC")
     implementation("moe.kyokobot.libdave:adapter-jda:0.1.2")
     implementation("moe.kyokobot.libdave:impl-jni:0.1.2")
-
-    // 실행 환경에 맞춰 필요한 네이티브 환경을 추가하세요. (아래는 Windows 64비트 예시)
     implementation("moe.kyokobot.libdave:natives-win-x86-64:0.1.2")
+    implementation("org.apache.commons:commons-lang3:3.12.0")
 }
 
 tasks.test {
     useJUnitPlatform()
+}
+
+tasks.jar {
+    manifest {
+        attributes["Main-Class"] = "org.example.MainKt"
+    }
+}
+
+tasks.shadowJar {
+     archiveBaseName.set("my-fat-app")
 }

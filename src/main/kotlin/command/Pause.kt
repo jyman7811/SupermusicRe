@@ -3,6 +3,7 @@ package org.example.command
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import org.example.controller.Controller
 import org.example.controller.ControllerManager
+import java.util.concurrent.TimeUnit
 
 class Pause : Command() {
     override val name: String = "pause"
@@ -19,10 +20,14 @@ class Pause : Command() {
 
         return if (pauseStatus) {
             controller.setPaused(false)
-            event.reply("다시 재생해줄게.").queue()
+            event.reply("다시 재생해줄게.").queue {
+                it.deleteOriginal().queueAfter(5, TimeUnit.SECONDS)
+            }
         } else {
             controller.setPaused(true)
-            event.reply("일시정지했어.").queue()
+            event.reply("일시정지했어.").queue() {
+                it.deleteOriginal().queueAfter(5, TimeUnit.SECONDS)
+            }
         }
     }
 }

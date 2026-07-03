@@ -1,5 +1,6 @@
 package org.example.bot
 
+import handler.DropdownListener
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.OnlineStatus
@@ -67,7 +68,7 @@ class Bot(private val token: String, private val owner: Long) {
      */
     fun run(): JDA? {
         this.jda = JDABuilder.createDefault(this.token)
-            .addEventListeners(CommandHandler(owner, commands, slashCommandData), LeaveGuildHandler())
+            .addEventListeners(CommandHandler(owner, commands, slashCommandData), LeaveGuildHandler(), DropdownListener())
             .setAudioModuleConfig(
                 AudioModuleConfig()
                 .withDaveSessionFactory(daveSessionFactory)
