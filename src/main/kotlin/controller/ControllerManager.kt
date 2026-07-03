@@ -13,7 +13,7 @@ import org.example.audio.AudioPlayerSendHandler
 object ControllerManager {
     private val controllers = HashMap<Long, Controller>()
     val playerManager: AudioPlayerManager = DefaultAudioPlayerManager()
-    val youtubeAudioSourceManager = YoutubeAudioSourceManager( /*allowSearch:*/true, MusicWithThumbnail(), WebWithThumbnail(), MWeb(), TvHtml5Embedded(), AndroidMusic(), Tv(), AndroidVr())
+    val youtubeAudioSourceManager = YoutubeAudioSourceManager( /*allowSearch:*/true, MusicWithThumbnail(), WebWithThumbnail(), MWeb(), AndroidMusic(), Tv(), AndroidVr())
 
 
 

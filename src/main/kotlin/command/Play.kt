@@ -3,10 +3,12 @@ package org.example.command
 import com.sedmelluq.discord.lavaplayer.track.AudioItem
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
+import net.dv8tion.jda.api.components.actionrow.ActionRow
+import net.dv8tion.jda.api.components.selections.SelectOption
+import net.dv8tion.jda.api.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
-import net.dv8tion.jda.api.interactions.components.selections.SelectOption
-import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
+
 import org.example.Util
 
 class Play : Command() {
@@ -21,7 +23,7 @@ class Play : Command() {
         Checker
             .checkIsInGuild(event)
             .checkIsInVoice(event)
-            .checkIsOptionFilled(event, "검색어", "검색어가 있어야 노래를 찾지. 쓸모 없는 하인이네.")
+            .checkIsOptionFilled(event, "검색어", "검색어가 있어야 노래를 찾지요...")
 
 
         val option = event.getOption("검색어")!!
@@ -63,8 +65,8 @@ class Play : Command() {
         }
 
 
-        event.reply("`${arg}`에 대한 **검색결과**야.")
-            .addActionRow(selectMenu.build())
-            .queue()
+        event.reply(String.format("`%s`에 대한 **검색결과**야.", arg))
+            .setComponents(ActionRow.of(selectMenu.build()))
+            .queue();
     }
 }

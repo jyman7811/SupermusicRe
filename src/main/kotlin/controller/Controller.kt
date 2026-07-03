@@ -39,6 +39,7 @@ class Controller(private val player: AudioPlayer, private val manager: AudioMana
     }
 
     fun join(channel: VoiceChannel) {
+        print("debug")
         manager.openAudioConnection(channel)
     }
 

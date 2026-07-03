@@ -3,6 +3,7 @@ package org.example.bot
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.JDABuilder
 import net.dv8tion.jda.api.OnlineStatus
+import net.dv8tion.jda.api.audio.AudioModuleConfig
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.interactions.commands.build.Commands
@@ -10,6 +11,11 @@ import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
 import org.example.command.Command
 import org.example.handler.CommandHandler
 import org.example.handler.LeaveGuildHandler
+import moe.kyokobot.libdave.DaveFactory;
+import moe.kyokobot.libdave.NativeDaveFactory;
+import moe.kyokobot.libdave.jda.LDJDADaveSessionFactory;
+import net.dv8tion.jda.api.audio.dave.DaveSessionFactory
+
 
 class Bot(private val token: String, private val owner: Long) {
     private val slashCommandData: ArrayList<SlashCommandData> = ArrayList()
@@ -53,7 +59,8 @@ class Bot(private val token: String, private val owner: Long) {
         println("${guild.name}의 명령어 업데이트 됨")
     }
 
-
+    private val daveFactory = NativeDaveFactory()
+    private val daveSessionFactory = LDJDADaveSessionFactory(daveFactory)
     /**
      * 봇의 작동을 시작합니다.
      * @return JDA의 값을 반환합니다.
@@ -61,6 +68,10 @@ class Bot(private val token: String, private val owner: Long) {
     fun run(): JDA? {
         this.jda = JDABuilder.createDefault(this.token)
             .addEventListeners(CommandHandler(owner, commands, slashCommandData), LeaveGuildHandler())
+            .setAudioModuleConfig(
+                AudioModuleConfig()
+                .withDaveSessionFactory(daveSessionFactory)
+            )
             .build()
         return this.jda
     }
